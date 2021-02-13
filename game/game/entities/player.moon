@@ -6,10 +6,10 @@ make = (x, y) ->
         speed: 50
         friction: 10
         controls:
-            up:    ','
-            down:  'o'
-            left:  'a'
-            right: 'e'
+            up:    'up'
+            down:  'down'
+            left:  'left'
+            right: 'right'
 
     with player
         .update = (dt) =>
@@ -48,13 +48,16 @@ make = (x, y) ->
             @dx = math.lerp @dx, 0, dt * @friction
             @dy = math.lerp @dy, 0, dt * @friction
 
-            a = math.atan2 @x - game.x, @y - game.y
+            a = math.atan2 @y - game.y, @x - game.x
 
             game.start_x = @x
             game.start_y = @y
 
-            game.camera.x = math.lerp game.camera.x, @x * game.camera.sx + (math.cos a) * 100, dt * 3
-            game.camera.y = math.lerp game.camera.y, @y * game.camera.sy + (math.sin a) * 100, dt * 3
+            -- game.camera.x = math.lerp game.camera.x, @x * game.camera.sx + math.sin(a) * 100, dt * 3
+            -- game.camera.y = math.lerp game.camera.y, @y * game.camera.sy + math.cos(a) * 100, dt * 3
+
+            game.camera.x = math.lerp game.camera.x, @x * game.camera.sx, dt * 3
+            game.camera.y = math.lerp game.camera.y, @y * game.camera.sy, dt * 3
 
     player.draw = =>
         with love.graphics
