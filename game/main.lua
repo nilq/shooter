@@ -1,6 +1,6 @@
 local path = ''
 local state = require(path .. 'state')
-local game = require(path .. 'game')
+game = require(path .. 'game')
 bump = require(path .. 'libs/bump')
 do
   local _with_0 = math

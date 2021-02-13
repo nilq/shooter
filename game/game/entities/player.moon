@@ -3,8 +3,8 @@ make = (x, y) ->
         :x, :y
         dx: 0
         dy: 0
-        speed: 10
-        friction: 4
+        speed: 100
+        friction: 10
         controls:
             up:    ','
             down:  'o'
@@ -13,23 +13,38 @@ make = (x, y) ->
 
     with player
         .update = (dt) =>
+            dx = 0
+            dy = 0
+
             if love.keyboard.isDown @controls.left
-                @dx -= @speed * dt
+                dx -= 1
 
             if love.keyboard.isDown @controls.right
-                @dx += @speed * dt
-            
+                dx += 1
+
             if love.keyboard.isDown @controls.up
-                @dx -= @speed * dt
-            
+                dy -= 1
+
             if love.keyboard.isDown @controls.down
-                @dx += @speed * dt
+                dy += 1
+
+            len = (dx^2 + dy^2)^0.5
+
+            dx /= len unless len == 0
+            dy /= len unless len == 0
+
+            @dx += dx * @speed * dt
+            @dy += dy * @speed * dt
 
             @x, @y, @collisions = game.world\move @, @x + @dx, @y + @dy
 
             @dx = math.lerp @dx, 0, dt * @friction
             @dy = math.lerp @dy, 0, dt * @friction
 
+    player.draw = =>
+        with love.graphics
+            .setColor 1, 1, 0.5
+            .rectangle 'fill', @x, @y, 16, 16
 
     player
 

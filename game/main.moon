@@ -1,8 +1,8 @@
 path = ''
 
 state = require path .. 'state'
-game  = require path .. 'game'
 
+export game = require path .. 'game'
 export bump = require path .. 'libs/bump'
 
 with math

@@ -108,6 +108,7 @@ mapper.gen = (config) ->
         map = fill .width, .height
 
         while .floor >= mapper.fraction_of map, 0
+
             if os.time! - start > 1
                 return mapper.gen config
 
