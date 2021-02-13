@@ -76,6 +76,8 @@ game.draw = =>
         .setColor 0, 0, 0
         .rectangle 'fill', @x - 2.5, @y - 2.5, 5, 5
 
+    s()
+
     @camera\unset!
 
 game.key_press = (key) =>
