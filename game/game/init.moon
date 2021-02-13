@@ -127,15 +127,18 @@ game.draw = =>
         --             .setColor 0.4, 0.7, 0.3
         --             .rectangle 'fill', x * @size, y * @size, @size, @size
 
-        
-        .setColor 0, 0, 1
-        x = @start_x
-        y = @start_y
 
     s!
 
     @camera\unset!
 
+    cx = love.graphics.getWidth! / 2
+    cy = love.graphics.getHeight! / 2
+
+    love.graphics.setColor 0, 0, 1
+    love.graphics.line @x, @y, (@start_x + cx - @camera.x/@camera.sx), (@start_y + cy - @camera.y/@camera.sy)
+
+    -- love.graphics.rectangle 'fill', x, y, 20, 20
 
 game.key_press = (key) =>
     switch key
