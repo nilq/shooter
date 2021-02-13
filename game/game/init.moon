@@ -24,7 +24,7 @@ game =
         floor:  0.1 -- fraction being floor
         spin:   1   -- probability of spinning the wormy boi
 
-    camera: camera.make love.graphics.getWidth! / 2, love.graphics.getHeight! / 2, 1 / 3.2, 1 / 3.2, 0
+    camera: camera.make love.graphics.getWidth! / 2, love.graphics.getHeight! / 2, 2.5, 2.5, 0
     world: {}
 
 game.load = =>
@@ -66,6 +66,7 @@ game.spawn = (obj) =>
 
 game.update = (dt) =>
     for obj in *@objects
+        continue unless obj
         obj\update dt if obj.update
 
 game.draw = =>
@@ -73,6 +74,7 @@ game.draw = =>
 
     with love.graphics
         for obj in *@objects
+            continue unless obj
             obj\draw! if obj.draw
 
         -- for x = 0, #@map
@@ -84,12 +86,19 @@ game.draw = =>
         --             .setColor 0.4, 0.7, 0.3
         --             .rectangle 'fill', x * @size, y * @size, @size, @size
 
-        .setColor 0, 0, 0
-        .rectangle 'fill', @x - 2.5, @y - 2.5, 5, 5
+        
+        .setColor 0, 0, 1
+        x = @start_x
+        y = @start_y
 
-    s()
+        .setColor 0, 0, 0
+        .rectangle 'fill', @camera.x + (@x - 2.5) * @camera.sx + .getWidth!, @camera.y + (@y - 2.5) * @camera.sy + .getHeight!, 5, 5
+        .rectangle 'fill', x, y, 20, 20
+
+    s!
 
     @camera\unset!
+
 
 game.key_press = (key) =>
     switch key
@@ -104,8 +113,8 @@ game.key_press = (key) =>
         obj\key_press key if obj.key_press
 
 game.mouse_moved = (x, y) =>
-    @x = x / @camera.sx
-    @y = y / @camera.sy
+    @x = x
+    @y = y
 
 game.mouse_press = (mouse, x, y) =>
     @scale = 2
