@@ -18,6 +18,9 @@ game =
     -- non-ECS event-queue
     objects: {}
 
+    -- ECS entity id list
+    ecs_ids: {}
+
     config:
         width:  love.graphics.getWidth!  / 10
         height: love.graphics.getHeight! / 10
@@ -41,13 +44,19 @@ game.new_level = =>
 
     @spawn player
 
+    for id in *@ecs_ids
+        e.delete(id)
+
+    @ecs_ids = {}
     for i=0, 10
         id = e.enemy {
             position: {x: cx, y: cy}
             size: {w: 32, h: 32}
             sprite: {src: ""}
-            enemy: {}
+            enemy:
+                waypoint: {x:0, y:0}
         }
+        @ecs_ids[#@ecs_ids+1] = id
         @world\add id, cx, cy, 32, 32
 
     @map   = mapper.automata (mapper.gen @config), @config
