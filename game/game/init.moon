@@ -30,25 +30,25 @@ game =
     camera: camera.make love.graphics.getWidth! / 2, love.graphics.getHeight! / 2, 2.5, 2.5, 0
     world: {}
 
-game.load = =>
-    love.graphics.setBackgroundColor 0.5, 0.8, 0.4
+    sprites: require path .. 'sprites'
 
+game.load = =>
     @world = bump.newWorld 64, 64
     @new_level!
 
+check_side = (map, x, y, t) ->
+    if map[x] and map[x][y]
+        return map[x][y] == t
+    false
+
 game.new_level = =>
     cx, cy = @config.width / 2 * game.size, @config.height / 2 * game.size
-
-    player = entities.player.make @config.width / 2 * game.size, @config.height / 2 * game.size
-    @world\add player, player.x, player.y, 16, 16
-
-    @spawn player
 
     for id in *@ecs_ids
         e.delete(id)
 
     @ecs_ids = {}
-    for i=0, 10
+    for i = 0, 10
         id = e.enemy {
             position: {x: cx, y: cy}
             size: {w: 32, h: 32}
@@ -64,11 +64,34 @@ game.new_level = =>
     for x = 0, #@map
         for y = 0, #@map[0]
             switch @map[x][y]
+                when 0
+                    b = block.make x * @size, y * @size, '0000'
+                    b.sprite = @sprites.floor.grass
+                    @spawn b
+                when 1 -- wall
+                    b = block.make x * @size, y * @size, '0000'
+                    @spawn b
                 when 2 -- solid block
-                    b = block.make x * @size, y * @size, @size, @size
+                    name = ''
+
+                    name ..= (check_side @map, x, y - 1, 0) and 1 or 0
+                    name ..= (check_side @map, x + 1, y, 0) and 1 or 0
+                    name ..= (check_side @map, x, y + 1, 0) and 1 or 0
+                    name ..= (check_side @map, x - 1, y, 0) and 1 or 0
+
+                    b = block.make x * @size, y * @size, '0000'
+                    b.sprite = @sprites.floor.grass
+                    @spawn b
+
+                    b = block.make x * @size, y * @size, name
                     @world\add b, b.x, b.y, b.w, b.h
 
                     @spawn b
+
+    player = entities.player.make @start_x * @size, @start_y * @size
+    @world\add player, player.x, player.y, 16, 16
+
+    @spawn player
 
 game.spawn = (obj) =>
     table.insert @objects, obj
@@ -99,10 +122,6 @@ game.draw = =>
         .setColor 0, 0, 1
         x = @start_x
         y = @start_y
-
-        .setColor 0, 0, 0
-        .rectangle 'fill', @camera.x + (@x - 2.5) * @camera.sx + .getWidth!, @camera.y + (@y - 2.5) * @camera.sy + .getHeight!, 5, 5
-        .rectangle 'fill', x, y, 20, 20
 
     s!
 

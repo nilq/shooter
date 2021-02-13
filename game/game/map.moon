@@ -37,7 +37,7 @@ mapper.automata = (map, config) ->
             switch map[x][y]
                 when 0
                     if sum > 4
-                        nmap[x][y] = 1
+                        nmap[x][y] = 1 unless x == game.start_x and y == game.start_y
                 when 1
                     if sum < 5
                         nmap[x][y] = 0
@@ -106,9 +106,9 @@ mapper.gen = (config) ->
             r: math.random 0, 3 -- clocwize 0..3
 
         map = fill .width, .height
+        player_set = false
 
         while .floor >= mapper.fraction_of map, 0
-
             if os.time! - start > 1
                 return mapper.gen config
 
@@ -128,6 +128,10 @@ mapper.gen = (config) ->
 
             if map[worm.x] and map[worm.x][worm.y]
                 map[worm.x][worm.y] = 0 -- floor
+
+                unless player_set
+                    game.start_x = worm.x
+                    game.start_y = worm.y
 
                 if worm.r == 0 or worm.r == 2
                     if map[worm.x] and map[worm.x][worm.y + 1]
