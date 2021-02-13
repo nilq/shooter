@@ -33,5 +33,23 @@ sprites =
         grass: love.graphics.newImage 'sprites/floor/grass.png'
     enemy:
         fucker: love.graphics.newImage 'sprites/enemy/fucker.png'
+    environment:
+        flower1: love.graphics.newImage 'sprites/environment/flower1.png'
+        flower2: love.graphics.newImage 'sprites/environment/flower2.png'
+        flower3: love.graphics.newImage 'sprites/environment/flower3.png'
+        flower4: love.graphics.newImage 'sprites/environment/flower4.png'
+        grass1:  love.graphics.newImage 'sprites/environment/grass1.png'
+        grass2:  love.graphics.newImage 'sprites/environment/grass2.png'
+        grass3:  love.graphics.newImage 'sprites/environment/grass3.png'
+        grass4:  love.graphics.newImage 'sprites/environment/grass4.png'
+        grass5:  love.graphics.newImage 'sprites/environment/grass5.png'
+        grass6:  love.graphics.newImage 'sprites/environment/grass6.png'
+        rocks1:   love.graphics.newImage 'sprites/environment/rocks1.png'
+        rocks2:   love.graphics.newImage 'sprites/environment/rocks2.png'
+        rocks3:   love.graphics.newImage 'sprites/environment/rocks3.png'
+        rocks4:   love.graphics.newImage 'sprites/environment/rocks4.png'
+    player: love.graphics.newImage 'sprites/player/player.png'
+
+
 
 sprites

@@ -3,8 +3,8 @@ make = (x, y) ->
         :x, :y
         dx: 0
         dy: 0
-        speed: 50
-        friction: 10
+        speed: 60
+        friction: 20
         controls:
             up:    ','
             down:  'o'
@@ -18,13 +18,10 @@ make = (x, y) ->
 
             if love.keyboard.isDown @controls.left
                 dx -= 1
-
             if love.keyboard.isDown @controls.right
                 dx += 1
-
             if love.keyboard.isDown @controls.up
                 dy -= 1
-
             if love.keyboard.isDown @controls.down
                 dy += 1
 
@@ -58,8 +55,8 @@ make = (x, y) ->
 
     player.draw = =>
         with love.graphics
-            .setColor 1, 1, 0.5
-            .rectangle 'fill', @x, @y, 16, 16
+            .setColor 1, 1, 1
+            .draw game.sprites.player, @x, @y, 0, 1, 1
 
     player
 

@@ -1,9 +1,9 @@
-make = (x, y, name) ->
+make = (x, y, sprite) ->
     block =
         :x, :y
         w: game.size
         h: game.size - 11
-        sprite: game.sprites.stones[name]
+        :sprite
 
     block.draw = =>
         with love.graphics

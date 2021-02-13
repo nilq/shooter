@@ -65,11 +65,21 @@ game.new_level = =>
         for y = 0, #@map[0]
             switch @map[x][y]
                 when 0
-                    b = block.make x * @size, y * @size, '0000'
+                    b = block.make x * @size, y * @size, game.sprites.stones['0000']
                     b.sprite = @sprites.floor.grass
                     @spawn b
+
+                    if 0 == math.random 0, 3
+                        keys = {}
+                        for k in pairs @sprites.environment
+                            table.insert keys, k
+
+                        b = block.make x * @size, y * @size, @sprites.environment[keys[math.random #keys]]
+
+                        @spawn b
+
                 when 1 -- wall
-                    b = block.make x * @size, y * @size, '0000'
+                    b = block.make x * @size, y * @size, game.sprites.stones['0000']
                     @spawn b
                 when 2 -- solid block
                     name = ''
@@ -79,17 +89,16 @@ game.new_level = =>
                     name ..= (check_side @map, x, y + 1, 0) and 1 or 0
                     name ..= (check_side @map, x - 1, y, 0) and 1 or 0
 
-                    b = block.make x * @size, y * @size, '0000'
-                    b.sprite = @sprites.floor.grass
+                    b = block.make x * @size, y * @size, @sprites.floor.grass
                     @spawn b
 
-                    b = block.make x * @size, y * @size, name
+                    b = block.make x * @size, y * @size, game.sprites.stones[name]
                     @world\add b, b.x, b.y, b.w, b.h
 
                     @spawn b
 
     player = entities.player.make @start_x * @size, @start_y * @size
-    @world\add player, player.x, player.y, 16, 16
+    @world\add player, player.x, player.y, 8, 16
 
     @spawn player
 
