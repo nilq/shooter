@@ -34,10 +34,21 @@ game.load = =>
     @new_level!
 
 game.new_level = =>
+    cx, cy = @config.width / 2 * game.size, @config.height / 2 * game.size
+
     player = entities.player.make @config.width / 2 * game.size, @config.height / 2 * game.size
     @world\add player, player.x, player.y, 16, 16
 
     @spawn player
+
+    for i=0, 10
+        id = e.enemy {
+            position: {x: cx, y: cy}
+            size: {w: 32, h: 32}
+            sprite: {src: ""}
+            enemy: {}
+        }
+        @world\add id, cx, cy, 32, 32
 
     @map   = mapper.automata (mapper.gen @config), @config
 

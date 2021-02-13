@@ -4,6 +4,7 @@ export e, c, s = unpack require path .. 'libs/ecs'
 require path..'game/ecs/components'
 require path..'game/ecs/entities/enemy'
 require path..'game/ecs/systems/render'
+require path..'game/ecs/systems/enemy'
 
 state = require path .. 'state'
 
