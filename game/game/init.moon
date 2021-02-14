@@ -39,7 +39,7 @@ game =
             spawn_threshold: 4
             die_threshold: 5
 
-    camera: camera.make love.graphics.getWidth! / 2, love.graphics.getHeight! / 2, 1.25, 1.25, 0
+    camera: camera.make love.graphics.getWidth! / 2, love.graphics.getHeight! / 2, 0.75, 0.75, 0
     world: {}
 
     sprites: require path .. 'sprites'
@@ -78,7 +78,7 @@ game.new_level = =>
         e.delete(id)
 
     @ecs_ids = {}
-    for i = 0, @config.ca.iterations
+    for i = 1, 10
         id = e.enemy {
             position: {x: cx, y: cy}
             size: {w: 32, h: 32}
@@ -91,7 +91,7 @@ game.new_level = =>
 
     imap = mapper.gen @config
 
-    for i = 0, 10
+    for i = 0, @config.ca.iterations
         imap = mapper.automata imap, @config
 
     @map = mapper.add_walls imap, @config
@@ -228,8 +228,17 @@ game.draw = =>
     love.graphics.setColor 0, 0, 0
     love.graphics.print 'layout (enter to change): ' .. @player.controls.current, 10, 60
 
-    love.graphics.print 'floor (change: 1 and 2): ' .. @config.floor, 10, 90
-    love.graphics.print 'spin  (change: 3 and 4): ' .. @config.spin, 10, 120
+    linecount = 0
+    newline = -> 
+        result = 90 + 15*linecount
+        linecount += 1
+        result
+        
+    love.graphics.print 'floor (change: 1 and 2): ' .. @config.floor, 10, newline!
+    love.graphics.print 'spin  (change: 3 and 4): ' .. @config.spin, 10, newline!
+    love.graphics.print 'ca iterations  (change: 5 and 6): ' .. @config.ca.iterations, 10, newline!
+    love.graphics.print 'ca spawn      (change: 7 and 8): ' .. @config.ca.die_threshold, 10, newline!
+    love.graphics.print 'ca die      (change: 9 and 0): ' .. @config.ca.spawn_threshold, 10, newline!
 
     -- love.graphics.rectangle 'fill', x, y, 20, 20
 
@@ -249,6 +258,18 @@ game.key_press = (key) =>
             @config.spin -= 0.02
         when '4'
             @config.spin += 0.02
+        when '5'
+            @config.ca.iterations -= 1
+        when '6'
+            @config.ca.iterations += 1
+        when '7'
+            @config.ca.die_threshold -= 1
+        when '8'
+            @config.ca.die_threshold += 1
+        when '9'
+            @config.ca.spawn_threshold -= 1
+        when '0'
+            @config.ca.spawn_threshold += 1
 
     for obj in *@objects
         obj\key_press key if obj.key_press
