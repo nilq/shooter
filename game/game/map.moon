@@ -16,7 +16,7 @@ clone = (map) ->
 
     for x = 0, #map
         for y = 0, #map[0]
-            nmap[x][y] = map[x][y]
+            nmap[x][y] = map[x][y] == 2 and 1 or map[x][y]
     nmap
 
 mapper = {}
@@ -36,15 +36,22 @@ mapper.automata = (map, config) ->
 
             switch map[x][y]
                 when 0
-                    if sum > 4
+                    if sum > config.ca.spawn_threshold
                         nmap[x][y] = 1 unless x == game.start_x and y == game.start_y
                 when 1
-                    if sum < 5
+                    if sum < config.ca.die_threshold
                         nmap[x][y] = 0
 
         for x = 1, #nmap - 1
             for y = 1, #nmap[0] - 1
                 auto x, y
+        
+    nmap
+
+mapper.add_walls = (map, config) -> 
+    nmap = {}
+    with config
+        nmap = clone map
 
         for x = 0, #nmap
             for y = 0, #nmap[0]
@@ -63,26 +70,10 @@ mapper.automata = (map, config) ->
                             sum += map[x + ix][y + iy]
 
                 if nmap[x][y] == 1
-                    if sum != 8
+                    if sum < 8
                         nmap[x][y] = 2 -- solid
                 elseif flag
                     nmap[x][y] = 2 -- solid
-
-        -- for x = 1, #nmap - 1
-        --     for y = 1, #nmap[0] - 1
-        --         void = false
-
-        --         if nmap[x][y] == 2
-        --             for ix = -1, 1
-        --                 for iy = -1, 1
-        --                     unless (ix == 0 and iy == 0)
-        --                         if map[x + ix][y + iy] == 1
-        --                             void = true
-                
-        --             unless void
-        --                 nmap[x][y] = 0
-                        
-                        
 
     nmap -- the new map
 

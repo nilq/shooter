@@ -34,6 +34,10 @@ game =
         height: love.graphics.getHeight! / 10
         floor:  0.1  -- fraction being floor
         spin:   0.22 -- probability of spinning the wormy boi
+        ca:
+            iterations: 3
+            spawn_threshold: 4
+            die_threshold: 5
 
     camera: camera.make love.graphics.getWidth! / 2, love.graphics.getHeight! / 2, 1.25, 1.25, 0
     world: {}
@@ -74,7 +78,7 @@ game.new_level = =>
         e.delete(id)
 
     @ecs_ids = {}
-    for i = 0, 10
+    for i = 0, @config.ca.iterations
         id = e.enemy {
             position: {x: cx, y: cy}
             size: {w: 32, h: 32}
@@ -85,7 +89,12 @@ game.new_level = =>
         @ecs_ids[#@ecs_ids+1] = id
         @world\add id, cx, cy, 32, 32
 
-    @map = mapper.automata (mapper.gen @config), @config
+    imap = mapper.gen @config
+
+    for i = 0, 10
+        imap = mapper.automata imap, @config
+
+    @map = mapper.add_walls imap, @config
 
     for x = 0, #@map
         for y = 0, #@map[0]
