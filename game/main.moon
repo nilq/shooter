@@ -14,7 +14,7 @@ state = require path .. 'state'
 export game = require path .. 'game'
 export bump = require path .. 'libs/bump'
 
--- love.graphics = require path .. 'libs/autobatch'
+love.graphics = require path .. 'libs/autobatch'
 
 with math
     .lerp = (a, b, t) -> a + (b - a) * t
@@ -46,8 +46,8 @@ with love
     .keypressed = (key) ->
         state\keypressed key
 
-    .mousepressed = (x, y) ->
-        state\mousepressed x, y
+    .mousepressed = (x, y, button) ->
+        state\mousepressed x, y, button
 
     .mousemoved = (x, y) ->
         state\mousemoved x, y

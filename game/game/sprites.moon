@@ -44,12 +44,14 @@ sprites =
         grass4:  love.graphics.newImage 'sprites/environment/grass4.png'
         grass5:  love.graphics.newImage 'sprites/environment/grass5.png'
         grass6:  love.graphics.newImage 'sprites/environment/grass6.png'
-        rocks1:   love.graphics.newImage 'sprites/environment/rocks1.png'
-        rocks2:   love.graphics.newImage 'sprites/environment/rocks2.png'
-        rocks3:   love.graphics.newImage 'sprites/environment/rocks3.png'
-        rocks4:   love.graphics.newImage 'sprites/environment/rocks4.png'
+        rocks1:  love.graphics.newImage 'sprites/environment/rocks1.png'
+        rocks2:  love.graphics.newImage 'sprites/environment/rocks2.png'
+        rocks3:  love.graphics.newImage 'sprites/environment/rocks3.png'
+        rocks4:  love.graphics.newImage 'sprites/environment/rocks4.png'
     player: love.graphics.newImage 'sprites/player/player.png'
-
-
+    gun:
+        handgun: love.graphics.newImage 'sprites/gun/handgun.png'
+    bullet:
+        pill_lg: love.graphics.newImage 'sprites/projectile/pill_large.png'
 
 sprites

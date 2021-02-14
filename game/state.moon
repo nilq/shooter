@@ -18,7 +18,7 @@ state.keypressed = (key) =>
 state.mousemoved = (x, y) =>
     @current\mouse_moved x, y
 
-state.mousepressed = (mouse, x, y) =>
+state.mousepressed = (x, y, mouse) =>
     @current\mouse_press mouse, x, y
 
 state

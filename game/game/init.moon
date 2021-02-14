@@ -3,7 +3,8 @@ path = 'game/'
 mapper   = require path .. 'map'
 camera   = require path .. 'camera'
 block    = require path .. 'block'
-entities = require path .. 'entities'
+
+export entities = require path .. 'entities'
 
 game =
     x: 0
@@ -15,8 +16,12 @@ game =
     size: 32
     map: {}
 
+    player: {} -- we need a reference to the player; enemies etc. need to know what's up
+
     -- non-ECS event-queue
     objects: {}
+    grass:   {} -- jush fucking grass, draw it in the background
+    guns:    {} -- guns and bullets
 
     -- ECS entity id list
     ecs_ids: {}
@@ -27,7 +32,7 @@ game =
         floor:  0.1 -- fraction being floor
         spin:   1   -- probability of spinning the wormy boi
 
-    camera: camera.make love.graphics.getWidth! / 2, love.graphics.getHeight! / 2, 2.5, 2.5, 0
+    camera: camera.make love.graphics.getWidth! / 2, love.graphics.getHeight! / 2, 2, 2, 0
     world: {}
 
     sprites: require path .. 'sprites'
@@ -42,6 +47,10 @@ check_side = (map, x, y, t) ->
     false
 
 game.new_level = =>
+    @objects = {}
+    @grass   = {}
+    @guns    = {}
+
     cx, cy = @config.width / 2 * game.size, @config.height / 2 * game.size
 
     for id in *@ecs_ids
@@ -59,7 +68,7 @@ game.new_level = =>
         @ecs_ids[#@ecs_ids+1] = id
         @world\add id, cx, cy, 32, 32
 
-    @map   = mapper.automata (mapper.gen @config), @config
+    @map = mapper.automata (mapper.gen @config), @config
 
     for x = 0, #@map
         for y = 0, #@map[0]
@@ -67,7 +76,7 @@ game.new_level = =>
                 when 0
                     b = block.make x * @size, y * @size, game.sprites.stones['0000']
                     b.sprite = @sprites.floor.grass
-                    @spawn b
+                    @spawn_grass b
 
                     if 0 == math.random 0, 3
                         keys = {}
@@ -84,39 +93,76 @@ game.new_level = =>
                 when 2 -- solid block
                     name = ''
 
+                    down = check_side @map, x, y + 1, 0
+
                     name ..= (check_side @map, x, y - 1, 0) and 1 or 0
                     name ..= (check_side @map, x + 1, y, 0) and 1 or 0
-                    name ..= (check_side @map, x, y + 1, 0) and 1 or 0
+                    name ..= down                           and 1 or 0
                     name ..= (check_side @map, x - 1, y, 0) and 1 or 0
 
                     b = block.make x * @size, y * @size, @sprites.floor.grass
-                    @spawn b
+                    @spawn_grass b
 
-                    b = block.make x * @size, y * @size, game.sprites.stones[name]
+                    b = block.make x * @size, y * @size, game.sprites.stones[name], down
                     @world\add b, b.x, b.y, b.w, b.h
 
                     @spawn b
 
-    player = entities.player.make @start_x * @size, @start_y * @size
-    @world\add player, player.x, player.y, 8, 16
+    @player = entities.player.make @start_x * @size, @start_y * @size
+    @world\add @player, @player.x, @player.y, 8, 16
 
-    @spawn player
+    @spawn @player
 
 game.spawn = (obj) =>
     table.insert @objects, obj
+    obj\load! if obj.load
+    obj
+
+game.spawn_grass = (grass) =>
+    table.insert @grass, grass
+
+game.spawn_gun = (gun) =>
+    table.insert @guns, gun
+    gun
 
 game.update = (dt) =>
     for obj in *@objects
         continue unless obj
         obj\update dt if obj.update
 
+    for gun in *@guns
+        continue unless gun
+        gun\update dt if gun.update
+
+game.real_pos_of = (obj) =>
+    cx = love.graphics.getWidth! / 2
+    cy = love.graphics.getHeight! / 2
+
+    x = obj.x * @camera.sx + cx - @camera.x + obj.w / 2 * @camera.sx
+    y = obj.y * @camera.sy + cy - @camera.y + obj.h / 2 * @camera.sy
+
+    x, y
+
+game.atan2_obj_to_mouse = (obj) =>
+    x, y = @real_pos_of obj
+
+    math.atan2 y - @y, x - @x
+
 game.draw = =>
     @camera\set!
 
     with love.graphics
+        for grass in *@grass
+            continue unless grass
+            grass\draw! if grass.draw
+
         for obj in *@objects
             continue unless obj
             obj\draw! if obj.draw
+
+        for gun in *@guns
+            continue unless gun
+            gun\draw! if gun.draw
 
         -- for x = 0, #@map
         --     for y = 0, #@map[0]
@@ -127,23 +173,24 @@ game.draw = =>
         --             .setColor 0.4, 0.7, 0.3
         --             .rectangle 'fill', x * @size, y * @size, @size, @size
 
-
     s!
 
     @camera\unset!
 
-    cx = love.graphics.getWidth! / 2
-    cy = love.graphics.getHeight! / 2
+    -- cx = love.graphics.getWidth! / 2
+    -- cy = love.graphics.getHeight! / 2
 
-    love.graphics.setColor 0, 0, 1
-    love.graphics.line @x, @y, (@start_x + cx - @camera.x/@camera.sx), (@start_y + cy - @camera.y/@camera.sy)
+    -- love.graphics.setColor 0, 0, 1
+    -- love.graphics.line @x, @y, @player.x * @camera.sx + cx - @camera.x + @player.w / 2 * @camera.sx, @player.y * @camera.sy + cy - @camera.y + @player.h / 2 * @camera.sy
+
+    love.graphics.setColor 0, 0, 0
+    love.graphics.print 'layout (enter to change): ' .. @player.controls.current, 10, 60
 
     -- love.graphics.rectangle 'fill', x, y, 20, 20
 
 game.key_press = (key) =>
     switch key
         when 'space'
-            @objects = {}
             @world   = bump.newWorld 64, 64
             @new_level!
 
@@ -157,6 +204,7 @@ game.mouse_moved = (x, y) =>
     @y = y
 
 game.mouse_press = (mouse, x, y) =>
-    @scale = 2
+    for obj in *@objects
+        obj\mouse_press mouse, x, y if obj.mouse_press
 
 game
