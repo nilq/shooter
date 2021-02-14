@@ -25,6 +25,13 @@ with math
           1
         else
           0
+    .clamp = (a, b, v) ->
+        if v < a
+            a
+        else if v > b
+            b
+        else
+            v
 
 dt_ = 0
 

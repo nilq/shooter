@@ -25,12 +25,16 @@ make = (config, mother) ->
             @flip = last_flip if @flip == 0
 
     gun.shoot = =>
-        bx = @x - @w * math.cos @r
-        by = @y - @w * math.sin @r
+        bx = @x - @w * 2.1 * math.cos @r 
+        by = @y - @w * 2.1 * math.sin @r
         a = @r + math.pi / 2 * @config.spread * 0.01 * math.random -100, 100
-        game\spawn_gun entities.bullet.make @config.bullet_sprite, bx, by, a, @config.bullet_speed
 
-        @radius -= @config.recoil
+        bullet = entities.bullet.make @config.bullet_sprite, bx, by, a, @config.bullet_speed
+        game.world\add bullet, bullet.x, bullet.y, bullet.w, bullet.h
+
+        game\spawn_gun bullet
+
+        @radius = math.clamp @config.radius - @config.recoil, @config.radius, @radius - @config.recoil
 
     gun
 

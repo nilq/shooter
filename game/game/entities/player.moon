@@ -21,10 +21,12 @@ make = (x, y) ->
 
             current: 'dvorak'
         gun: {}
+        walki: 0
 
     with player
         .load = =>
             @gun = game\spawn_gun (entities.gun.make entities.guns.handgun!, @)
+            game\animate @, 'walki', 1, 4, 10
 
         .update = (dt) =>
             dx = 0
@@ -72,10 +74,16 @@ make = (x, y) ->
 
             @gun.r = game\atan2_obj_to_mouse @
 
+    player.current_sprite = =>
+        if (0.01 < math.abs @dx) or (0.01 < math.abs @dy)
+            game.sprites.player.walk[@walki]
+        else
+            game.sprites.player.idle
+
     player.draw = =>
         with love.graphics
             .setColor 1, 1, 1
-            .draw game.sprites.player, @x + @w / 2, @y + @h / 2, 0, @flip, 1, @w / 2, @h / 2
+            .draw @current_sprite!, @x + @w / 2, @y + @h / 2, 0, @flip, 1, @w / 2, @h / 2
 
             last_flip = @flip
             @flip = (math.sign (game\real_pos_of @) - game.x)

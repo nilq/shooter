@@ -48,7 +48,14 @@ sprites =
         rocks2:  love.graphics.newImage 'sprites/environment/rocks2.png'
         rocks3:  love.graphics.newImage 'sprites/environment/rocks3.png'
         rocks4:  love.graphics.newImage 'sprites/environment/rocks4.png'
-    player: love.graphics.newImage 'sprites/player/player.png'
+    player:
+        idle: love.graphics.newImage 'sprites/player/player_idle.png'
+        walk: {
+            love.graphics.newImage 'sprites/player/player_walk1.png',
+            love.graphics.newImage 'sprites/player/player_walk2.png',
+            love.graphics.newImage 'sprites/player/player_walk3.png',
+            love.graphics.newImage 'sprites/player/player_walk4.png'
+        }
     gun:
         handgun: love.graphics.newImage 'sprites/gun/handgun.png'
     bullet:

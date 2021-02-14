@@ -23,16 +23,19 @@ game =
     grass:   {} -- jush fucking grass, draw it in the background
     guns:    {} -- guns and bullets
 
+    -- for ticking all the animations
+    animation_loop: {}
+
     -- ECS entity id list
     ecs_ids: {}
 
     config:
         width:  love.graphics.getWidth!  / 10
         height: love.graphics.getHeight! / 10
-        floor:  0.1 -- fraction being floor
-        spin:   1   -- probability of spinning the wormy boi
+        floor:  0.1  -- fraction being floor
+        spin:   0.22 -- probability of spinning the wormy boi
 
-    camera: camera.make love.graphics.getWidth! / 2, love.graphics.getHeight! / 2, 2, 2, 0
+    camera: camera.make love.graphics.getWidth! / 2, love.graphics.getHeight! / 2, 1.25, 1.25, 0
     world: {}
 
     sprites: require path .. 'sprites'
@@ -45,6 +48,20 @@ check_side = (map, x, y, t) ->
     if map[x] and map[x][y]
         return map[x][y] == t
     false
+
+game.animate = (obj, field, a, b, speed) =>
+    table.insert @animation_loop,
+        :obj
+        :field
+        :a
+        :b
+        :speed
+        time: a
+
+game.remove_animation = (obj, field) =>
+    for i, a in ipairs @animation_loop
+        table.remove @animation_loop, i if a.obj == obj and a.field == field
+        break
 
 game.new_level = =>
     @objects = {}
@@ -125,6 +142,15 @@ game.spawn_gun = (gun) =>
     table.insert @guns, gun
     gun
 
+game.remove_bullet = (b) =>
+    for i, v in ipairs @guns
+        if v == b
+            table.remove @guns, i
+            break
+        
+
+    @world\remove b
+
 game.update = (dt) =>
     for obj in *@objects
         continue unless obj
@@ -133,6 +159,13 @@ game.update = (dt) =>
     for gun in *@guns
         continue unless gun
         gun\update dt if gun.update
+
+    for an in *@animation_loop
+        an.time += dt * an.speed
+        if (math.floor an.time) > an.b
+            an.time = an.a
+
+        an.obj[an.field] = math.floor an.time
 
 game.real_pos_of = (obj) =>
     cx = love.graphics.getWidth! / 2
@@ -186,6 +219,9 @@ game.draw = =>
     love.graphics.setColor 0, 0, 0
     love.graphics.print 'layout (enter to change): ' .. @player.controls.current, 10, 60
 
+    love.graphics.print 'floor (change: 1 and 2): ' .. @config.floor, 10, 90
+    love.graphics.print 'spin  (change: 3 and 4): ' .. @config.spin, 10, 120
+
     -- love.graphics.rectangle 'fill', x, y, 20, 20
 
 game.key_press = (key) =>
@@ -195,6 +231,15 @@ game.key_press = (key) =>
             @new_level!
 
             collectgarbage("count")
+
+        when '1'
+            @config.floor -= 0.02
+        when '2'
+            @config.floor += 0.02
+        when '3'
+            @config.spin -= 0.02
+        when '4'
+            @config.spin += 0.02
 
     for obj in *@objects
         obj\key_press key if obj.key_press

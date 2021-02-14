@@ -7,10 +7,18 @@ make = (sprite, x, y, a, speed) ->
         dy: speed * -math.sin a
         w: sprite\getWidth!
         h: sprite\getHeight!
+        dead: false
 
     b.update = (dt) =>
-        @x += @dx * dt
-        @y += @dy * dt
+        unless @dead
+            @x, @y, @collisions = game.world\move @, @x + @dx * dt, @y + @dy * dt
+
+        for c in *@collisions
+            unless @dead
+                game\remove_bullet @
+
+            @dead = true
+            break
 
     b.draw = =>
         with love.graphics
